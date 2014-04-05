@@ -56,9 +56,8 @@ local function calculateNoteSteps(str)
   return steps
 end
 
--- Calculates how long a note is in seconds
--- given a note fraction (crotchet = 1/4, minim = 1/2, etc.)
--- and a tempo (in beats per minute).
+-- Calculates how long a note is in seconds given a note fraction
+-- (quarter note = 1/4, half note = 1/2, etc.) and a tempo (in beats per minute).
 local function calculateNoteTime(notefrac, bpm)
   return (240/notefrac) / bpm
 end
