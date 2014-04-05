@@ -9,14 +9,14 @@
 local mml = {}
 
 -------------------------------------------------------
-mml.outputType = 'frequency'
+mml.outputType = "frequency"
 
--- If 'steps', outputs the number of semitones
+-- If "steps", outputs the number of semitones
 -- away from A 440 the note is.
 
--- If 'frequency', outputs the frequency of the note.
+-- If "frequency", outputs the frequency of the note.
 
--- If 'multiplier', outputs frequency/440.
+-- If "multiplier", outputs frequency/440.
 
 -- Set it in your code to whatever you need!
 -------------------------------------------------------
@@ -45,8 +45,8 @@ local function calculateNoteFrequency(n)
 end
 
 local function calculateNoteSteps(str)
-  local note,sharp,octave = string.match(str,'(%a)(#?)(%d)')
-  if sharp == '' then
+  local note,sharp,octave = string.match(str, "(%a)(#?)(%d)")
+  if sharp == "" then
     sharp = 0
   else
     sharp = 1
@@ -59,17 +59,17 @@ end
 -- Calculates how long a note is in seconds
 -- given a note fraction (crotchet = 1/4, minim = 1/2, etc.)
 -- and a tempo (in beats per minute).
-local function calculateNoteTime(notefrac,bpm)
-  return (240/notefrac)/bpm
+local function calculateNoteTime(notefrac, bpm)
+  return (240/notefrac) / bpm
 end
 
 function mml:calculateNote(note)
   local steps = calculateNoteSteps(note)
-  if self.outputType == 'frequency' then
+  if self.outputType == "frequency" then
     return calculateNoteFrequency(steps)
-  elseif self.outputType == 'steps' then
+  elseif self.outputType == "steps" then
     return steps
-  elseif self.outputType == 'multiplier' then
+  elseif self.outputType == "multiplier" then
     return ROOT_MULT ^ steps
   end
 end
@@ -83,64 +83,64 @@ function mml:newPlayer(str)
     local volume = 10
 
     for i=1,#str do
-      local c = str:sub(i,i):lower()
+      local c = str:sub(i, i):lower()
       -- Set octave
-      if c == 'o' then
-        octave = str:sub(i+1,i+1)
+      if c == "o" then
+        octave = str:sub(i+1, i+1)
       -- Set tempo
-      elseif c == 't' then
-        tempo = str:sub(i+1):match('^%d+')
+      elseif c == "t" then
+        tempo = str:sub(i+1):match("^%d+")
       -- Set volume
-      elseif c == 'v' then
-        volume = str:sub(i+1):match('^%d+')
+      elseif c == "v" then
+        volume = str:sub(i+1):match("^%d+")
       -- Rest
-      elseif c == 'r' then
+      elseif c == "r" then
         local delay
-        if str:sub(i+1):find('^%d+') then
-          delay = calculateNoteTime(tonumber(str:sub(i+1):match('^%d+')),tempo)
+        if str:sub(i+1):find("^%d+") then
+          delay = calculateNoteTime( tonumber( str:sub(i+1):match("^%d+") ), tempo )
         else
-          delay = calculateNoteTime(notelength,tempo)
+          delay = calculateNoteTime(notelength, tempo)
         end
-        coroutine.yield(nil,delay,nil)
+        coroutine.yield(nil, delay, nil)
       -- Set note length
-      elseif c == 'l' then
-        notelength = tonumber(str:sub(i+1):match('^%d+'))
+      elseif c == "l" then
+        notelength = tonumber( str:sub(i+1):match("^%d+") )
       -- Increase octave
-      elseif c == '>' then
+      elseif c == ">" then
         octave = octave + 1
       -- Decrease octave
-      elseif c == '<' then
+      elseif c == "<" then
         octave = octave - 1
       -- Play note
-      elseif c:find('[a-g]') then
+      elseif c:find("[a-g]") then
         local note
-        if str:sub(i+1,i+1) == '#' or str:sub(i+1,i+1) == '+' then
-          note = c .. '#' .. octave
+        if str:sub(i+1,i+1) == "#" or str:sub(i+1, i+1) == "+" then
+          note = c .. "#" .. octave
         else
           note = c .. octave
         end
 
         local notetime
         local timeset = 1
-        if str:sub(i+1,i+1) == '#' then timeset = 2 end
-        if str:sub(i+timeset):find('^%d+') then
-          local notefrac = tonumber(str:sub(i+timeset):match('^%d+'))
-          notetime = calculateNoteTime(notefrac,tempo)
+        if str:sub(i+1, i+1) == "#" then timeset = 2 end
+        if str:sub(i+timeset):find("^%d+") then
+          local notefrac = tonumber( str:sub(i+timeset):match("^%d+") )
+          notetime = calculateNoteTime(notefrac, tempo)
         else
-          notetime = calculateNoteTime(notelength,tempo)
+          notetime = calculateNoteTime(notelength, tempo)
         end
         -- Dotted notes
-        if str:sub(i+timeset+1,i+timeset+1)== '.' then
+        if str:sub(i+timeset+1, i+timeset+1)== "." then
           notetime = notetime * 1.5
         end
         local output = self:calculateNote(note)
-        coroutine.yield(output,notetime,volume)
+        coroutine.yield(output, notetime, volume)
       end
     end
     -- The coroutine deliberately raises an error when it
     -- finishes so coroutine.resume returns false as
     -- its first argument.
-    error('Player finished.')
+    error("Player finished.")
   end)
 end
 
