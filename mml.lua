@@ -29,11 +29,6 @@ local mml = {
 	]]
 }
 
--- When a note is to be played,
--- the player yields with the note (output set by mml.outputType),
--- the time in seconds the note is to be played and the current volume.
--- It also yields for rests, with nil as the note and for the volume.
-
 -------------------------------------------------------
 mml.outputType = "frequency"
 
@@ -99,7 +94,15 @@ function mml:calculateNote(note)
   end
 end
 
+
 -- Receives a string of MML and returns a player.
+
+-- When resumed, the player yields with the note (output set by mml.outputType),
+-- the time in seconds the note is to be played and the volume it should be played at.
+-- It also yields for rests, with nil as the note and for the volume.
+-- When the player reaches the end of the song, it will raise an error which
+-- will be caught by coroutine.resume.
+
 function mml:newPlayer(str)
   return coroutine.create(function()
     local octave = 4
