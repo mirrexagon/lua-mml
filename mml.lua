@@ -66,7 +66,7 @@ local function calculateNoteFrequency(n)
 end
 
 local function calculateNoteSteps(str)
-  local note,sharp,octave = string.match(str, "(%a)(#?)(%d)")
+  local note, sharp, octave = string.match(str, "(%a)(#?)(%d)")
   if sharp == "" then
     sharp = 0
   else
