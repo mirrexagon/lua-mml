@@ -94,6 +94,28 @@ local function calculateNote(note, outputType)
   end
 end
 
+
+--[[
+	Phrases:
+		Note: n[#][l]
+			n is the note (a-g)
+			a # or + makes the note sharp and a - makes it flat
+			l is the length of the note
+				4 is quarter note (1/4), 2 is half note (1/2), etc.
+				Excluding this uses the default length, set with "l"
+
+		Rest: r[l]
+			l is the length of the rest, specified the same way as note length
+
+		Commands:
+			t[n] - set tempo to n
+			o[n] - set octave to n
+			l[n] - set default note length to n
+			v[n] - set volume to v
+			> - increment octave by one
+			< - decrement octave by one
+]]
+
 -- Receives a string of MML and returns a player.
 
 -- When resumed, the player yields with the note (output set by outputType),
@@ -109,65 +131,91 @@ function mml.newPlayer(str, outputType)
     local notelength = 4
     local volume = 10
 
-    for i=1,#str do
-      local c = str:sub(i, i):lower()
-      -- Set octave
-      if c == "o" then
-        octave = str:sub(i+1, i+1)
-      -- Set tempo
-      elseif c == "t" then
-        tempo = str:sub(i+1):match("^%d+")
-      -- Set volume
-      elseif c == "v" then
-        volume = str:sub(i+1):match("^%d+")
-      -- Rest
-      elseif c == "r" then
+		local pos = 1
+
+    repeat
+			local c, args, newpos = string.match(
+				string.sub(str, pos),
+				"^([%a<>])(%A-)%s-()[%a<>]"
+			)
+
+			if not c then -- Might be the last command in the string.
+				c, args = string.match(
+					string.sub(str, pos),
+					"^([%a<>])(%A-)"
+				)
+				newpos = 0
+			end
+
+
+			if not c then -- Probably bad syntax.
+				error("Malformed MML")
+			end
+
+
+			pos = pos + (newpos - 1)
+
+      if c == "o" then -- Set octave
+        octave = tostring(args)
+
+      elseif c == "t" then -- Set tempo
+        tempo = tostring(args)
+
+      elseif c == "v" then -- Set volume
+        volume = tostring(args)
+
+      elseif c == "r" then -- Rest
         local delay
-        if str:sub(i+1):find("^%d+") then
-          delay = calculateNoteTime( tonumber( str:sub(i+1):match("^%d+") ), tempo )
+        if args then
+          delay = calculateNoteTime( tonumber(args), tempo )
         else
           delay = calculateNoteTime(notelength, tempo)
         end
         coroutine.yield(nil, delay, nil)
-      -- Set note length
-      elseif c == "l" then
-        notelength = tonumber( str:sub(i+1):match("^%d+") )
-      -- Increase octave
-      elseif c == ">" then
+
+      elseif c == "l" then -- Set note length
+        notelength = tonumber(args)
+
+      elseif c == ">" then -- Increase octave
         octave = octave + 1
-      -- Decrease octave
-      elseif c == "<" then
+
+      elseif c == "<" then -- Decrease octave
         octave = octave - 1
-      -- Play note
-      elseif c:find("[a-g]") then
+
+      elseif c:find("[a-g]") then -- Play note
         local note
-        if str:sub(i+1,i+1) == "#" or str:sub(i+1, i+1) == "+" then
-          note = c .. "#" .. octave
-        else
-          note = c .. octave
+				local mod = string.match(args, "[+#-]")
+				if mod then
+					if mod == "#" or mod == "+" then
+						note = c .. "#" .. octave
+					elseif mod == "-" then
+						note = c .. "-" .. octave
+					end
+				else
+					note = c .. octave
         end
 
         local notetime
-        local timeset = 1
-        if str:sub(i+1, i+1) == "#" then timeset = 2 end
-        if str:sub(i+timeset):find("^%d+") then
-          local notefrac = tonumber( str:sub(i+timeset):match("^%d+") )
-          notetime = calculateNoteTime(notefrac, tempo)
+				local len = string.match(args, "%d+")
+        if len then
+          notetime = calculateNoteTime(tonumber(len), tempo)
         else
           notetime = calculateNoteTime(notelength, tempo)
         end
+
         -- Dotted notes
-        if str:sub(i+timeset+1, i+timeset+1)== "." then
+        if string.find(args, "%.") then
           notetime = notetime * 1.5
         end
+
         local output = calculateNote(note, outputType)
         coroutine.yield(output, notetime, volume)
       end
-    end
+    until newpos == 0
     -- The coroutine deliberately raises an error when it
     -- finishes so coroutine.resume returns false as
     -- its first argument.
-    error("Player finished.")
+    error("Player finished")
   end)
 end
 
