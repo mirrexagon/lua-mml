@@ -1,6 +1,6 @@
 -- An example for the Lua MML module.
 -- It relies on beep (found on Linux systems) to make sounds.
--- If you have beep and it doesn"t work, try "sudo modprobe pcspkr"
+-- If you have beep and it doesn't work, try "sudo modprobe pcspkr"
 -- That will try to load the "pcspkr" kernel module.
 
 -- Load the module.
