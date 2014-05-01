@@ -83,13 +83,13 @@ local function calculateNoteTime(notefrac, bpm)
   return (240/notefrac) / bpm
 end
 
-function mml:calculateNote(note)
+function mml:calculateNote(note, outputType)
   local steps = calculateNoteSteps(note)
-  if self.outputType == "frequency" then
+  if outputType == "frequency" then
     return calculateNoteFrequency(steps)
-  elseif self.outputType == "steps" then
+  elseif outputType == "steps" then
     return steps
-  elseif self.outputType == "multiplier" then
+  elseif outputType == "multiplier" then
     return ROOT_MULT ^ steps
   end
 end
@@ -97,13 +97,13 @@ end
 
 -- Receives a string of MML and returns a player.
 
--- When resumed, the player yields with the note (output set by mml.outputType),
+-- When resumed, the player yields with the note (output set by outputType),
 -- the time in seconds the note is to be played and the volume it should be played at.
 -- It also yields for rests, with nil as the note and for the volume.
 -- When the player reaches the end of the song, it will raise an error which
 -- will be caught by coroutine.resume.
 
-function mml:newPlayer(str)
+function mml:newPlayer(str, outputType)
   return coroutine.create(function()
     local octave = 4
     local tempo = 60
@@ -161,7 +161,7 @@ function mml:newPlayer(str)
         if str:sub(i+timeset+1, i+timeset+1)== "." then
           notetime = notetime * 1.5
         end
-        local output = self:calculateNote(note)
+        local output = self:calculateNote(note, outputType)
         coroutine.yield(output, notetime, volume)
       end
     end
