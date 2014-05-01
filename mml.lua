@@ -166,7 +166,7 @@ function mml.newPlayer(str, outputType)
 
       elseif c == "r" then -- Rest
         local delay
-        if args then
+        if args ~= "" then
           delay = calculateNoteTime( tonumber(args), tempo )
         else
           delay = calculateNoteTime(notelength, tempo)
