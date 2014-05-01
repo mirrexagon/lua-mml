@@ -1,5 +1,5 @@
 -- An example for the Lua MML module.
--- It relies on the "play" from SoX (http://sox.sourceforge.net/).
+-- This example uses SoX's "play" utility for synthesising notes (http://sox.sourceforge.net/).
 
 -- Load the module.
 local mml = require("mml")
