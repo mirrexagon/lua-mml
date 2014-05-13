@@ -29,19 +29,6 @@ local mml = {
 	]]
 }
 
--------------------------------------------------------
-mml.outputType = "frequency"
-
--- If "steps", outputs the number of semitones
--- away from A 440 the note is.
-
--- If "frequency", outputs the frequency of the note.
-
--- If "multiplier", outputs frequency/440.
-
--- Set it in your code to whatever you need!
--------------------------------------------------------
-
 -- Using A as a base note, these are how many
 -- semitones/steps away a note on the same octave is.
 local steps = {
@@ -123,6 +110,11 @@ end
 -- It also yields for rests, with nil as the note and for the volume.
 -- When the player reaches the end of the song, it will raise an error which
 -- will be caught by coroutine.resume.
+
+-- outputType can be:
+-- "steps", outputs the number of semitones away from A 440 the note is.
+-- "frequency", outputs the frequency of the note.
+-- "multiplier", outputs frequency/440.
 
 function mml.newPlayer(str, outputType)
   return coroutine.create(function()
