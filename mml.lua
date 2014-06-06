@@ -54,14 +54,7 @@ end
 
 local function calculateNoteSteps(str)
   local note, sharp, octave = string.match(str, "(%a)(#?)(%d)")
-  if sharp == "" then
-    sharp = 0
-  else
-    sharp = 1
-  end
-
-  local steps = (octave - REF_OCTAVE)*12 + steps[note] + sharp
-  return steps
+  return (octave - REF_OCTAVE)*12 + steps[note] + (sharp == "" and 0 or 1)
 end
 
 -- Calculates how long a note is in seconds given a note fraction
