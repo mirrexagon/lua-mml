@@ -141,13 +141,13 @@ function mml.newPlayer(str, outputType)
 			pos = pos + (newpos - 1)
 
       if c == "o" then -- Set octave
-        octave = tostring(args)
+        octave = tonumber(args)
 
       elseif c == "t" then -- Set tempo
-        tempo = tostring(args)
+        tempo = tonumber(args)
 
       elseif c == "v" then -- Set volume
-        volume = tostring(args)
+        volume = tonumber(args)
 
       elseif c == "r" then -- Rest
         local delay
