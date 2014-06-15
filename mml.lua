@@ -32,13 +32,13 @@ local mml = {
 -- Using A as a base note, these are how many
 -- semitones/steps away a note on the same octave is.
 local steps = {
-  a = 0,
-  b = 2,
-  c = -9,
-  d = -7,
-  e = -5,
-  f = -4,
-  g = -2
+	a = 0,
+	b = 2,
+	c = -9,
+	d = -7,
+	e = -5,
+	f = -4,
+	g = -2
 }
 
 local REF_FREQ = 440 -- A4
@@ -49,29 +49,29 @@ local ROOT_MULT = 2^(1/12) -- A constant: the twelfth root of two.
 -- for information on calculating note frequencies.
 
 local function calculateNoteFrequency(n)
-  return REF_FREQ * (ROOT_MULT ^ n)
+	return REF_FREQ * (ROOT_MULT ^ n)
 end
 
 local function calculateNoteSteps(str)
-  local note, sharp, octave = string.match(str, "(%a)(#?)(%d)")
-  return (octave - REF_OCTAVE)*12 + steps[note] + (sharp == "" and 0 or 1)
+local note, sharp, octave = string.match(str, "(%a)(#?)(%d)")
+	return (octave - REF_OCTAVE)*12 + steps[note] + (sharp == "" and 0 or 1)
 end
 
 -- Calculates how long a note is in seconds given a note fraction
 -- (quarter note = 1/4, half note = 1/2, etc.) and a tempo (in beats per minute).
 local function calculateNoteTime(notefrac, bpm)
-  return (240/notefrac) / bpm
+	return (240/notefrac) / bpm
 end
 
 local function calculateNote(note, outputType)
-  local steps = calculateNoteSteps(note)
-  if outputType == "frequency" then
-    return calculateNoteFrequency(steps)
-  elseif outputType == "steps" then
-    return steps
-  elseif outputType == "multiplier" then
-    return ROOT_MULT ^ steps
-  end
+	local steps = calculateNoteSteps(note)
+	if outputType == "frequency" then
+		return calculateNoteFrequency(steps)
+	elseif outputType == "steps" then
+		return steps
+	elseif outputType == "multiplier" then
+		return ROOT_MULT ^ steps
+	end
 end
 
 
@@ -110,15 +110,15 @@ end
 -- "multiplier", outputs frequency/440.
 
 function mml.newPlayer(str, outputType)
-  return coroutine.create(function()
-    local octave = 4
-    local tempo = 60
-    local notelength = 4
-    local volume = 10
+	return coroutine.create(function()
+		local octave = 4
+		local tempo = 60
+		local notelength = 4
+		local volume = 10
 
-		local pos = 1
+			local pos = 1
 
-    repeat
+		repeat
 			local c, args, newpos = string.match(
 				string.sub(str, pos),
 				"^([%a<>])(%A-)%s-()[%a<>]"
@@ -140,68 +140,68 @@ function mml.newPlayer(str, outputType)
 
 			pos = pos + (newpos - 1)
 
-      if c == "o" then -- Set octave
-        octave = tonumber(args)
+			if c == "o" then -- Set octave
+				octave = tonumber(args)
 
-      elseif c == "t" then -- Set tempo
-        tempo = tonumber(args)
+			elseif c == "t" then -- Set tempo
+				tempo = tonumber(args)
 
-      elseif c == "v" then -- Set volume
-        volume = tonumber(args)
+			elseif c == "v" then -- Set volume
+				volume = tonumber(args)
 
-      elseif c == "r" then -- Rest
-        local delay
-        if args ~= "" then
-          delay = calculateNoteTime( tonumber(args), tempo )
-        else
-          delay = calculateNoteTime(notelength, tempo)
-        end
-        coroutine.yield(nil, delay, nil)
-
-      elseif c == "l" then -- Set note length
-        notelength = tonumber(args)
-
-      elseif c == ">" then -- Increase octave
-        octave = octave + 1
-
-      elseif c == "<" then -- Decrease octave
-        octave = octave - 1
-
-      elseif c:find("[a-g]") then -- Play note
-        local note
-				local mod = string.match(args, "[+#-]")
-				if mod then
-					if mod == "#" or mod == "+" then
-						note = c .. "#" .. octave
-					elseif mod == "-" then
-						note = c .. "-" .. octave
-					end
+			elseif c == "r" then -- Rest
+				local delay
+				if args ~= "" then
+				delay = calculateNoteTime( tonumber(args), tempo )
 				else
-					note = c .. octave
-        end
+				delay = calculateNoteTime(notelength, tempo)
+				end
+				coroutine.yield(nil, delay, nil)
 
-        local notetime
-				local len = string.match(args, "%d+")
-        if len then
-          notetime = calculateNoteTime(tonumber(len), tempo)
-        else
-          notetime = calculateNoteTime(notelength, tempo)
-        end
+			elseif c == "l" then -- Set note length
+				notelength = tonumber(args)
 
-        -- Dotted notes
-        if string.find(args, "%.") then
-          notetime = notetime * 1.5
-        end
+			elseif c == ">" then -- Increase octave
+				octave = octave + 1
 
-        local output = calculateNote(note, outputType)
-        coroutine.yield(output, notetime, volume)
-      end
-    until newpos == 0
-    -- The coroutine deliberately raises an error when it
-    -- finishes so coroutine.resume returns false as
-    -- its first argument.
-    error("Player finished")
-  end)
+			elseif c == "<" then -- Decrease octave
+				octave = octave - 1
+
+			elseif c:find("[a-g]") then -- Play note
+				local note
+						local mod = string.match(args, "[+#-]")
+						if mod then
+							if mod == "#" or mod == "+" then
+								note = c .. "#" .. octave
+							elseif mod == "-" then
+								note = c .. "-" .. octave
+							end
+						else
+							note = c .. octave
+				end
+
+				local notetime
+						local len = string.match(args, "%d+")
+				if len then
+				notetime = calculateNoteTime(tonumber(len), tempo)
+				else
+				notetime = calculateNoteTime(notelength, tempo)
+				end
+
+				-- Dotted notes
+				if string.find(args, "%.") then
+				notetime = notetime * 1.5
+				end
+
+				local output = calculateNote(note, outputType)
+				coroutine.yield(output, notetime, volume)
+			end
+		until newpos == 0
+		-- The coroutine deliberately raises an error when it
+		-- finishes so coroutine.resume returns false as
+		-- its first argument.
+		error("Player finished")
+	end)
 end
 
 return mml
