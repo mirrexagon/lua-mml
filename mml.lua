@@ -152,9 +152,9 @@ function mml.newPlayer(str, outputType)
 			elseif c == "r" then -- Rest
 				local delay
 				if args ~= "" then
-				delay = calculateNoteTime( tonumber(args), tempo )
+					delay = calculateNoteTime( tonumber(args), tempo )
 				else
-				delay = calculateNoteTime(notelength, tempo)
+					delay = calculateNoteTime(notelength, tempo)
 				end
 				coroutine.yield(nil, delay, nil)
 
