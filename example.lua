@@ -26,11 +26,11 @@ local player = mml.newPlayer(canon, "frequency")
 
 
 while true do
-  -- Resume the coroutine to get the next note or rest.
+	-- Resume the coroutine to get the next note or rest.
 	local ok, note, time, vol = coroutine.resume(player)
 
-  -- If it's finished, the coroutine will raise an error,
-  -- which is caught by coroutine.resume and makes "ok" false.
+	-- If it's finished, the coroutine will raise an error,
+	-- which is caught by coroutine.resume and makes "ok" false.
 	-- The error message goes to "note".
 	if not ok then
 		print(note)
@@ -38,13 +38,13 @@ while true do
 	end
 
 	if note then
-    -- Use SoX's synth effect to sound the note.
+	-- Use SoX's synth effect to sound the note.
 		os.execute( string.format(
 			"play -qn -V0 synth %.2f pluck %.2f",
 			time, note
 		))
 	else
-    -- If "note" is nil, it's a rest.
+	-- If "note" is nil, it's a rest.
 		delay(time)
 	end
 end
