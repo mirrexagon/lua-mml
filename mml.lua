@@ -53,7 +53,7 @@ local function calculateNoteFrequency(n)
 end
 
 local function calculateNoteSteps(str)
-    local note, sharp, octave = string.match(str, "(%a)(#?)(%d)")
+	local note, sharp, octave = string.match(str, "(%a)(#?)(%d)")
 	return (octave - REF_OCTAVE)*12 + steps[note] + (sharp == "" and 0 or 1)
 end
 
@@ -116,7 +116,7 @@ function mml.newPlayer(str, outputType)
 		local notelength = 4
 		local volume = 10
 
-        local pos = 1
+		local pos = 1
 
 		repeat
 			local c, args, newpos = string.match(
@@ -169,28 +169,28 @@ function mml.newPlayer(str, outputType)
 
 			elseif c:find("[a-g]") then -- Play note
 				local note
-                local mod = string.match(args, "[+#-]")
-                if mod then
-                    if mod == "#" or mod == "+" then
-                        note = c .. "#" .. octave
-                    elseif mod == "-" then
-                        note = c .. "-" .. octave
-                    end
-                else
-                    note = c .. octave
-                end
+				local mod = string.match(args, "[+#-]")
+				if mod then
+					if mod == "#" or mod == "+" then
+						note = c .. "#" .. octave
+					elseif mod == "-" then
+						note = c .. "-" .. octave
+					end
+				else
+					note = c .. octave
+				end
 
 				local notetime
-                local len = string.match(args, "%d+")
+				local len = string.match(args, "%d+")
 				if len then
-                    notetime = calculateNoteTime(tonumber(len), tempo)
+					notetime = calculateNoteTime(tonumber(len), tempo)
 				else
-                    notetime = calculateNoteTime(notelength, tempo)
+					notetime = calculateNoteTime(notelength, tempo)
 				end
 
 				-- Dotted notes
 				if string.find(args, "%.") then
-                    notetime = notetime * 1.5
+					notetime = notetime * 1.5
 				end
 
 				local output = calculateNote(note, outputType)
