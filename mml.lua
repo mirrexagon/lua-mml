@@ -1,9 +1,9 @@
 local mml = {
 	_VERSION = "Lua MML",
-	_DESCRIPTION = "A Music Macro Language interpreter",
+	_DESCRIPTION = "A Music Macro Language interpreter.",
 	_URL = "https://github.com/legospacy/lua-mml",
 	_LICENSE = [[
-		Copyright (c) 2014 Andrew Abbott
+		Copyright (c) 2014-2015 Andrew Abbott
 
 		Permission is hereby granted, free of charge, to any person obtaining a copy
 		of this software and associated documentation files (the "Software"), to deal
@@ -14,10 +14,6 @@ local mml = {
 
 		The above copyright notice and this permission notice shall be included in
 		all copies or substantial portions of the Software.
-
-		Except as contained in this notice, the name(s) of the above copyright holders
-		shall not be used in advertising or otherwise to promote the sale, use or
-		other dealings in this Software without prior written authorization.
 
 		THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 		IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
